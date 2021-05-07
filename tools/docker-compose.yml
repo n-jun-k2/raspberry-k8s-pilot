@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  golang:
+    build: 
+      context: .
+      dockerfile: ./docker/golang/Dockerfile
+    tty: true
+    volumes:
+      - ./project:/go
+      - pkg_store:/go/pkg
+      - bin_store:/go/bin
+volumes:
+  pkg_store:
+  bin_store:

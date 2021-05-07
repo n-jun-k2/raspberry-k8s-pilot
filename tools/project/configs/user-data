@@ -1,0 +1,26 @@
+#cloud-config
+
+hostname: {{.Hostname}}
+chpasswd:
+  expire: false
+  list:
+  - {{.Username}}:{{.Password}}
+
+system_info:
+  default_user:
+    name: {{.Username}}
+
+locale: ja_JP.UTF-8
+timezone: Asia/Tokyo
+
+ssh_pwauth: {{.Issshpwauth}}
+write_files:
+- path: /home/{{.Username}}/.ssh/authorized_keys
+  content: |-
+    {{range $key := .Keys}}{{$key}}{{end}}
+  permissions: '0640'
+  owner: {{.Username}}
+
+runcmd:
+- [ chown, {{.Username}}, /home/{{.Username}}]
+- [ chown, {{.Username}}, /home/{{.Username}}/.ssh]

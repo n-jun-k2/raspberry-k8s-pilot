@@ -1,0 +1,11 @@
+version: 2
+ethernets:
+  {{.Network}}
+    dhcp4: {{.Dhcp4}}
+    dhcp6: {{.Dhcp6}}
+    optional: true
+    addresses: {{.Addresses}}
+    gateway4: {{.RouterIP}}
+    nameservers:
+      addresses: [{{.RouterIP}}]
+      search: []
