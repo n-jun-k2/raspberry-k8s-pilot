@@ -17,10 +17,6 @@ Practice building an environment using kubernets
 
 ## Initial setting of raspberry pi
 1. [install ubuntu server 20.04 LTS](https://www.raspberrypi.org/software/)
-2. [setup cmdline](doc/CMDLINE.md)
-3. [setup ``network-config``](doc/NETWORK.md)
-4. [setup ssh](doc/SSH.md)
-
 
 ## Setup cloud-init...
 
