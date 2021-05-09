@@ -51,12 +51,12 @@ Practice building an environment using kubernets
 > kubeadm init
 ...
 kubeadm join 192.168.11.15:6443 --token 3ofe67.7aeswyreaxx6ejg6 \
-    --discovery-token-ca-cert-hash sha256:78e148131354ed0e8ceeb0bb8afa1330e05c2003d88c24a02d904e13760a2800
+    --discovery-token-ca-cert-hash sha256:78e148131354e...904e13760a2800
 > sh scripts/master/config.sh
 
 # Worker node only installation
 > kubeadm join 192.168.11.15:6443 --token 3ofe67.7aeswyreaxx6ejg6 \
-    --discovery-token-ca-cert-hash sha256:78e148131354ed0e8ceeb0bb8afa1330e05c2003d88c24a02d904e13760a2800
+    --discovery-token-ca-cert-hash sha256:78e148131354e...904e13760a2800
 
 # Setup complete...
 root@k8s-master-0001:~# kubectl get nodes
