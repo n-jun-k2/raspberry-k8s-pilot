@@ -1,14 +1,26 @@
-TOOLS_SERVICE_NAME := golang
+TOOLS_GOLANG_SERVICE_NAME := golang
+TOOLS_TERRAFORM_SERVICE_NAME := tf
 
 .PHONY: build-tools
 build-tools:
 	cd tools &&\
 	docker-compose --env-file ../.env up -d --build
 
-.PHONY: login-tools
-login-tools:
+.PHONY: down
+down:
+	cd tools && \
+	docker-compose down
+
+.PHONY: login-tools-go
+login-tools-go:
 	cd tools &&\
-	docker-compose exec ${TOOLS_SERVICE_NAME} /bin/bash
+	docker-compose exec ${TOOLS_GOLANG_SERVICE_NAME} /bin/bash
+
+
+.PHONY: login-tools-tf
+login-tools-tf:
+	cd tools &&\
+	docker-compose exec ${TOOLS_TERRAFORM_SERVICE_NAME} ash
 
 .PHONY: clean-tools
 clean-tools:
@@ -20,7 +32,7 @@ clean-tools:
 .PHONY: run-tools
 run-tools:
 	cd tools &&\
-	docker-compose exec ${TOOLS_SERVICE_NAME} /bin/bash -c "go run ./cmd/${CMD}/main.go"
+	docker-compose exec ${TOOLS_GOLANG_SERVICE_NAME} /bin/bash -c "go run ./cmd/${CMD}/main.go"
 
 .PHONY: user-data
 user-data:

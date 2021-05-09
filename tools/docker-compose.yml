@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   golang:
-    build: 
+    build:
       context: .
       dockerfile: ./docker/golang/Dockerfile
     tty: true
@@ -9,6 +9,16 @@ services:
       - ./project:/go
       - pkg_store:/go/pkg
       - bin_store:/go/bin
+  tf:
+    build:
+      context: .
+      dockerfile: ./docker/terraform/Dockerfile
+    tty: true
+    volumes:
+      - ./terraform:/terraform
+      - ~/.kube:/root/.kube
+    working_dir: /terraform
+    entrypoint: ash
 volumes:
   pkg_store:
   bin_store:

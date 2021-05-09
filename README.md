@@ -77,3 +77,12 @@ hi  kubelet                        1.18.2-00                          arm64     
 ii  kubernetes-cni                 0.8.7-00                           arm64        Kubernetes CNI
 ```
 
+## kubectl setup...
+
+```powershell
+> cd ~
+> mkdir .kube
+> cd .kube
+> New-Item config -type file
+> ssh <user name>@<IP address> sudo kubectl config view --raw > ~/.kube/config
+```
