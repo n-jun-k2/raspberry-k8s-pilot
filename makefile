@@ -1,26 +1,18 @@
 TOOLS_GOLANG_SERVICE_NAME := golang
-TOOLS_TERRAFORM_SERVICE_NAME := tf
+
+.PHONY: terraform
+terraform:
+	docker-compose run tf ${CMD}
 
 .PHONY: build-tools
 build-tools:
 	cd tools &&\
 	docker-compose --env-file ../.env up -d --build
 
-.PHONY: down
-down:
-	cd tools && \
-	docker-compose down
-
-.PHONY: login-tools-go
-login-tools-go:
+.PHONY: login-tools
+login-tools:
 	cd tools &&\
 	docker-compose exec ${TOOLS_GOLANG_SERVICE_NAME} /bin/bash
-
-
-.PHONY: login-tools-tf
-login-tools-tf:
-	cd tools &&\
-	docker-compose exec ${TOOLS_TERRAFORM_SERVICE_NAME} ash
 
 .PHONY: clean-tools
 clean-tools:
@@ -39,6 +31,12 @@ user-data:
 	- del .\tools\project\user-data
 	make run-tools CMD=create_user_data
 	copy .\tools\project\user-data .\config\user-data
+
+.PHONY: network-conf
+network-conf:
+	- del .\tools\project\create_network_conf
+	make run-tools CMD=create_network_conf
+	copy .\tools\project\network-config .\config\network-config
 
 .PHONY: prune
 prune:

@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  tf:
+    image: hashicorp/terraform:0.15.3
+    volumes:
+      - ./terraform:/terraform
+      - ~/.kube:/root/.kube
+    working_dir: /terraform

@@ -12,9 +12,13 @@ func main() {
 	// パラメタを入力する
 	scanner := bufio.NewScanner(os.Stdin)
 
+	fmt.Print("SubNetMask >>")
+	scanner.Scan()
+	subnetmask := scanner.Text()
+
 	fmt.Print("Addresses >>")
 	scanner.Scan()
-	address := scanner.Text() + "/24"
+	address := scanner.Text()
 
 	fmt.Print("RouterIP >>")
 	scanner.Scan()
@@ -35,15 +39,14 @@ func main() {
 
 	//　テンプレートに書き込み
 	t.Execute(fw, struct {
-		Network string
 		Dhcp4 bool
 		Dhcp6 bool
-		Addresses []string
+		Addresses string
 		RouterIP string
-	}{ Network: "eth0",
-		Dhcp4: true,
-		Dhcp6: true,
-		Addresses: []string{ address },
+	}{
+		Dhcp4: false,
+		Dhcp6: false,
+		Addresses: address  + "/" + subnetmask,
 		RouterIP: routerIP})
 
 }
