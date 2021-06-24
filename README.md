@@ -33,7 +33,7 @@ Practice building an environment using kubernets
 
 ```bash
 # Transfer project directory
-> scp -r -P <Port> ../raspberry-k8s-train <host name>@<IP address>:/tmp/src/
+> scp -r -P <Port> .\scripts <host name>@<IP address>:/tmp/src/
 
 # Connect to device
 > ssh USERNAME@192.168.XXX.YYY -p 
