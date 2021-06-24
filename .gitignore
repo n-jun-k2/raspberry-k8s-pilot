@@ -1,6 +1,6 @@
 vscode*.js
 config/user-data
-
+config/network-config
 ### Terraform ###
 # Local .terraform directories
 **/.terraform/*
