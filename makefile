@@ -2,7 +2,7 @@ TOOLS_GOLANG_SERVICE_NAME := golang
 
 .PHONY: terraform
 terraform:
-	docker-compose run tf ${CMD}
+	@docker-compose run --rm tf ${CMD}
 
 .PHONY: build-tools
 build-tools:
@@ -34,7 +34,7 @@ user-data:
 
 .PHONY: network-conf
 network-conf:
-	- del .\tools\project\create_network_conf
+	- del .\tools\project\network-config
 	make run-tools CMD=create_network_conf
 	copy .\tools\project\network-config .\config\network-config
 
