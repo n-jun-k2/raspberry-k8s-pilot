@@ -40,5 +40,4 @@ network-conf:
 
 .PHONY: prune
 prune:
-	docker volume prune
-	docker network prune
+	docker system prune
