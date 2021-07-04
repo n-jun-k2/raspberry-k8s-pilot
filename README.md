@@ -123,3 +123,24 @@ rerun this command to reinitialize your working directory. If you forget, other
 commands will detect it and remind you to do so if necessary.
 
 ```
+
+# Set NAMESPACE
+
+```bash
+# create config.
+# make setconfig name=<new config name> space=<namespace>
+> make setconfig name=example space=example-namespace
+
+# show config
+> make showconfig
+kubectl config get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+          example                       kubernetes   kubernetes-admin   example-namespace
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin
+
+# switch config.
+# make useconfig name=<config name>
+>make useconfig name=example                    
+kubectl config use-context example
+Switched to context "example".
+```

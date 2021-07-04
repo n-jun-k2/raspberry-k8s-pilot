@@ -4,6 +4,28 @@ TOOLS_GOLANG_SERVICE_NAME := golang
 terraform:
 	@docker-compose run --rm tf ${CMD}
 
+
+.PHONY: tf-init
+tf-init:
+	@make terraform CMD=init
+.PHONY: tf-plan
+tf-plan:
+	@make terraform CMD=plan
+.PHONY: tf-destroy
+tf-destroy:
+	@make terraform CMD=destroy
+.PHONY: tf-apply
+tf-apply:
+	@make terraform CMD=apply
+
+tf-devplan:
+	@make terraform CMD="plan -var-file=dev.tfvars"
+tf-devapply:
+	@make terraform CMD="apply -var-file=dev.tfvars"
+tf-devdestroy:
+	@make terraform CMD="destroy -var-file=dev.tfvars"
+
+
 .PHONY: build-tools
 build-tools:
 	cd tools &&\
@@ -41,3 +63,16 @@ network-conf:
 .PHONY: prune
 prune:
 	docker system prune
+
+
+.PHONY: setconfig
+setconfig:
+	kubectl config set-context ${name} --namespace=${space} --cluster=kubernetes --user=kubernetes-admin
+
+.PHONY: useconfig
+useconfig:
+	kubectl config use-context ${name}
+
+.PHONY: showconfig
+showconfig:
+	kubectl config get-contexts
