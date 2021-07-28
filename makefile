@@ -1,30 +1,27 @@
 TOOLS_GOLANG_SERVICE_NAME := golang
 
+.PHONY: sh
+sh:
+	@cd tools && \
+	docker-compose run --rm --entrypoint "/bin/sh" terragrunt
+
 .PHONY: terraform
 terraform:
-	@docker-compose run --rm tf ${CMD}
+	@cd tools && \
+	docker-compose run --rm --entrypoint "terraform"  terragrunt "$(if ${dir}, -chdir=./terraform.tfstate.d/${dir}) ${cmd} $(if ${dir}, -var-file=${dir}.tfvars)"
 
+.PHONY: terragrunt
+terragrunt:
+	@cd tools && \
+	docker-compose run --rm terragrunt ${cmd}
 
-.PHONY: tf-init
-tf-init:
-	@make terraform CMD=init
-.PHONY: tf-plan
-tf-plan:
-	@make terraform CMD=plan
-.PHONY: tf-destroy
-tf-destroy:
-	@make terraform CMD=destroy
-.PHONY: tf-apply
-tf-apply:
-	@make terraform CMD=apply
-
-tf-devplan:
-	@make terraform CMD="plan -var-file=dev.tfvars"
-tf-devapply:
-	@make terraform CMD="apply -var-file=dev.tfvars"
-tf-devdestroy:
-	@make terraform CMD="destroy -var-file=dev.tfvars"
-
+.PHONY: workspace-%
+workspace-%:
+	@cd tools && \
+	make terraform cmd="workspace new $*" && \
+	make sh cmd="touch ./terraform.tfstate.d/$*/valiables.tf" && \
+	make sh cmd="touch ./terraform.tfstate.d/$*/$*.tfvars" && \
+	make terraform dir=$* cmd=init
 
 .PHONY: build-tools
 build-tools:
