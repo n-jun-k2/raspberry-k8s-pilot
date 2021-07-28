@@ -96,7 +96,7 @@ ii  kubernetes-cni                 0.8.7-00                           arm64     
 
 ```powershell
 > make terraform init
-make terraform CMD=init
+make terraform cmd=init
 docker-compose run --rm tf init
 Creating raspberry-k8s-pilot_tf_run ... done
 
@@ -143,4 +143,47 @@ CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPAC
 >make useconfig name=example                    
 kubectl config use-context example
 Switched to context "example".
+```
+
+# Create workspace 
+
+Procedure for creating a new Terraform Workspace.
+
+A directory called terraform.tfstate.d will be created, and a workspace directory will be created under it.
+
+```bash
+# new workspace..
+# make workspace-<new workspace name>"
+> make workspace-qa1
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' に入ります
+Creating raspberry-k8s-pilot_tf_run ... done
+Created and switched to workspace "qa1"!
+
+You're now on a new, empty workspace. Workspaces isolate their state,
+so if you run "terraform plan" Terraform will not see any existing state
+for this configuration.
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' から出ます
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' に入ります
+Creating raspberry-k8s-pilot_sh_run ... done
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' から出ます
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' に入ります
+Creating raspberry-k8s-pilot_sh_run ... done
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' から出ます
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' に入ります
+Creating raspberry-k8s-pilot_tf_run ... done
+
+Initializing the backend...
+
+Initializing provider plugins...
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' から出ます
 ```
