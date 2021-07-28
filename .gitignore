@@ -9,6 +9,9 @@ config/network-config
 *.tfstate
 *.tfstate.*
 
+# target workspace
+!**/terraform.tfstate.d
+
 # Crash log files
 crash.log
 
