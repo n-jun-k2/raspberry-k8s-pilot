@@ -1,27 +1,19 @@
 TOOLS_GOLANG_SERVICE_NAME := golang
 
-.PHONY: sh
-sh:
+.PHONY: kubectl
+kubectl:
 	@cd tools && \
-	docker-compose run --rm --entrypoint "/bin/sh" terragrunt
+	docker-compose run --rm --entrypoint "kubectl" kube ${cmd}
 
-.PHONY: terraform
-terraform:
+.PHONY: skaffold
+skaffold:
 	@cd tools && \
-	docker-compose run --rm --entrypoint "terraform"  terragrunt "$(if ${dir}, -chdir=./terraform.tfstate.d/${dir}) ${cmd} $(if ${dir}, -var-file=${dir}.tfvars)"
+	docker-compose run --rm --entrypoint "skaffold" kube ${cmd}
 
-.PHONY: terragrunt
-terragrunt:
+.PHONY: k9s
+k9s:
 	@cd tools && \
-	docker-compose run --rm terragrunt ${cmd}
-
-.PHONY: workspace-%
-workspace-%:
-	@cd tools && \
-	make terraform cmd="workspace new $*" && \
-	make sh cmd="touch ./terraform.tfstate.d/$*/valiables.tf" && \
-	make sh cmd="touch ./terraform.tfstate.d/$*/$*.tfvars" && \
-	make terraform dir=$* cmd=init
+	docker-compose run --rm kube
 
 .PHONY: build-tools
 build-tools:

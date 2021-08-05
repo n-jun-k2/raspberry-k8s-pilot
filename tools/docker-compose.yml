@@ -9,18 +9,11 @@ services:
       - ./project:/go
       - pkg_store:/go/pkg
       - bin_store:/go/bin
-  terragrunt:
+  kube:
+    image: kube:latest
     build:
       context: .
-      dockerfile: ./docker/terragrunt/Dockerfile
-      target: stage1
-    volumes:
-      - ../terraform:/terraform
-      - ~/.kube:/root/.kube
-  k9s:
-    build:
-      context: .
-      dockerfile: ./docker/k9s/Dockerfile
+      dockerfile: ./docker/kube/Dockerfile
       target: stage1
     volumes:
       - ../terraform:/terraform
