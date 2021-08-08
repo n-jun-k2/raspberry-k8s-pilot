@@ -15,8 +15,10 @@ services:
       context: .
       dockerfile: ./docker/kube/Dockerfile
       target: stage1
+    working_dir: /skaffold
     volumes:
-      - ../terraform:/terraform
+      - ../k8s:/k8s
+      - ../skaffold:/skaffold
       - ~/.kube:/root/.kube
 volumes:
   pkg_store:

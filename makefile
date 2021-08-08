@@ -1,5 +1,11 @@
 TOOLS_GOLANG_SERVICE_NAME := golang
 
+
+.PHONY: bash
+bash:
+	@cd tools && \
+	docker-compose run --rm --entrypoint "/bin/bash" kube
+
 .PHONY: kubectl
 kubectl:
 	@cd tools && \

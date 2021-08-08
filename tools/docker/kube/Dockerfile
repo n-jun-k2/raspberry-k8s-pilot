@@ -23,7 +23,7 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
   && chmod +x skaffold \
   && mv skaffold /usr/local/bin
 
-FROM alpine:3.14 AS stage1
+FROM ubuntu:20.10 AS stage1
 
 COPY --from=base /usr/local/bin /usr/bin
 CMD []
