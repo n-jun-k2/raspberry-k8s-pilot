@@ -30,12 +30,12 @@ To force writing, do ```:w !sudo tee %``` and complete with ```:q!```
 # Push image test.
 
 ```bash
+# Added tag to specify private repository
 >docker tag hello-world <hostname>:<port>/hello-world:1.0
+# push image... 
 >docker push <hostname>:<port>/hello-world:1.0
 The push refers to repository [<hostname>:<port>/hello-world]
 f22b99068db9: Pushed
 1.0: digest: sha256:1b26826f602946860c279fce658f31050cff2c596583af237d971f4629b57792 size: 525
-
->
 ```
 
