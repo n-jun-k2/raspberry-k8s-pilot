@@ -22,8 +22,16 @@ Practice building an environment using kubernets
 
 ```bash
 > make build-tools
+# clipboard copy. (windows)
+> clip < %USERPROFILE%\.ssh\ssh_key.pub
 # create user-data file.
 > make user-data
+...
+...
+# create network-config
+> make network-conf
+...
+...
 # Copy the config file to the Ubuntu boot unit.
 > xcopy .\config\* <target path>
 ```
