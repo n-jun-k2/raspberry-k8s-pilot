@@ -1,78 +1,71 @@
 #!/bin/sh
 
-export KUBE_VERSION=1.18.2-00
+export KUBE_VERSION=1.30
+export CONTAINERD_VERSION=1.7.16
+export RUNC_VERSION=1.1.9
+export CNI_PLUGINS_VERSION=1.4.1
+export ARCH=arm64
 
-
-# Disable swap
-swapoff -a
-update-alternatives --set iptables /usr/sbin/iptables-legacy
-
-
-# setup Containerd
-cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+# IPv4を転送し、iptablesにブリッジされたトラフィックを認識させる
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
 overlay
 br_netfilter
 EOF
 
-modprobe overlay
-modprobe br_netfilter
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
-cat > /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
+# sysctl params required by setup, params persist across reboots
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-iptables  = 1
-net.ipv4.ip_forward                 = 1
 net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
 EOF
 
-sysctl --system
+# Apply sysctl params without reboot
+sudo sysctl --system
 
 # install Containerd
-## リポジトリの設定
-### HTTPS越しのリポジトリの使用をaptに許可するために、パッケージをインストール
-apt-get update && apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-## Docker公式のGPG鍵を追加
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-## Dockerのaptリポジトリの追加
-add-apt-repository \
-    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-    $(lsb_release -cs) \
-    stable"
-## containerdのインストール
-apt-get update && apt-get install -y containerd
-# containerdの設定
+apt-get update && apt-get install -y apt-transport-https ca-certificates curl
+curl -LO https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-${ARCH}.tar.gz
+tar Cxzvf /usr/local containerd-${CONTAINERD_VERSION}-linux-${ARCH}.tar.gz
+
+curl -LO https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.${ARCH}
+install -m 755 runc.${ARCH} /usr/local/sbin/runc
+
+curl -LO https://github.com/containernetworking/plugins/releases/download/v${CNI_PLUGINS_VERSION}/cni-plugins-linux-${ARCH}-v${CNI_PLUGINS_VERSION}.tgz
+mkdir -p /opt/cni/bin
+tar Cxzvf /opt/cni/bin cni-plugins-linux-${ARCH}-v${CNI_PLUGINS_VERSION}.tgz
+
+mkdir -p /usr/local/lib/systemd/system
+curl -o /usr/local/lib/systemd/system/containerd.service https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+systemctl daemon-reload
+systemctl enable --now containerd
+
+
 mkdir -p /etc/containerd
 containerd config default | tee /etc/containerd/config.toml
-# containerdの再起動
+sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
 systemctl restart containerd
 
-apt-mark hold containerd
-
-
 # install kubeadm
+apt-get update
+apt-get install -y apt-transport-https
 
-cat <<EOF > /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-sysctl --system
+mkdir -p -m 755 /etc/apt/keyrings
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v${KUBE_VERSION}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v${KUBE_VERSION}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-# レガシーバイナリがインストールされていることを確認してください
-apt-get install -y iptables arptables ebtables
+apt-get update
 
-# レガシーバージョンに切り替えてください。
-update-alternatives --set iptables /usr/sbin/iptables-legacy
-update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-update-alternatives --set arptables /usr/sbin/arptables-legacy
-update-alternatives --set ebtables /usr/sbin/ebtables-legacy
+# clear apt apt-get lock...
+killall apt apt-get
+rm /var/lib/apt/lists/lock
+rm /var/lib/dpkg/lock
+rm /var/lib/dpkg/lock-frontend
+dpkg --configure -a
 
-# kubelet kubeadm kubectl　のインストール失敗対応:https://github.com/kubernetes/website/issues/18380
-apt-get update && sudo apt-get install -y apt-transport-https curl
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
-deb https://apt.kubernetes.io/ kubernetes-xenial main
-EOF
-sudo apt-get update
-
-# install kubeadm...
-apt-get install -y kubelet=${KUBE_VERSION} kubeadm=${KUBE_VERSION} kubectl=${KUBE_VERSION}
+apt-get install -y kubelet kubeadm kubectl
 apt-mark hold kubelet kubeadm kubectl

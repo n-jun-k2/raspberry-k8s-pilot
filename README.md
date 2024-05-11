@@ -39,6 +39,23 @@ Practice building an environment using kubernets
 
 ## How to use...
 
+#### Update cidr in "custom-resources.yaml":
+
+> original data: https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml
+
+```yaml
+apiVersion: operator.tigera.io/v1
+...
+spec:
+  calicoNetwork:
+    ipPools:
+    - blockSize: 26
+      cidr: 192.168.0.20/24 # Address of "kubeadm init pod-network-cidr"
+...
+```
+
+#### Deploy setup script to cluster:
+
 ```bash
 # Transfer project directory
 > scp -r -P <Port> .\scripts <host name>@<IP address>:/tmp/src/
@@ -55,18 +72,48 @@ Practice building an environment using kubernets
 # Install in common (If the script fails, try running the script again)
 > sh scripts/install.sh
 
-# Master node only installation
-> kubeadm init --apiserver-advertise-address=192.168.11.15 --pod-network-cidr=10.244.0.0/16
+> kubeadm config images pull
+[config/images] Pulled registry.k8s.io/kube-apiserver:v1.30.0
+[config/images] Pulled registry.k8s.io/kube-controller-manager:v1.30.0
+[config/images] Pulled registry.k8s.io/kube-scheduler:v1.30.0
+[config/images] Pulled registry.k8s.io/kube-proxy:v1.30.0
+[config/images] Pulled registry.k8s.io/coredns/coredns:v1.11.1
+[config/images] Pulled registry.k8s.io/pause:3.9
+[config/images] Pulled registry.k8s.io/etcd:3.5.12-0
+
+
+
+# <Calico> Master node only installation
+> kubeadm init --apiserver-advertise-address=192.168.xx.yy --pod-network-cidr=10.240.0.0/16
 ...
-kubeadm join 192.168.11.15:6443 --token 3ofe67.7aeswyreaxx6ejg6 \
-    --discovery-token-ca-cert-hash sha256:78e148131354e...904e13760a2800
-# setup config
-> sh scripts/master/config.sh
-# deploy flannel (https://github.com/flannel-io/flannel)
-> kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.14.0/Documentation/kube-flannel.yml
+Your Kubernetes control-plane has initialized successfully!
 
+...
 
+Then you can join any number of worker nodes by running the following on each as root:
 
+kubeadm join 192.168.xx.yy:6443 --token zz.eeee \
+        --discovery-token-ca-cert-hash sha256:...
+
+> /tmp/src/master/config.sh
+
+> kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
+
+# setup cni
+> /tmp/src/master/setup_cni_calico.sh
+
+> kubectl get nodes
+NAME      STATUS   ROLES           AGE   VERSION
+k8s0001   Ready    control-plane   45m   v1.30.0
+
+# install calicoctl
+> /tmp/src/master/install_kubectl_calico.sh
+
+# Verify the plugin works. 
+> kubectl calico -h
+Usage:
+  kubectl-calico [options] <command> [<args>...]
+...
 # Worker node only installation
 > kubeadm join 192.168.11.15:6443 --token 3ofe67.7aeswyreaxx6ejg6 \
     --discovery-token-ca-cert-hash sha256:78e148131354e...904e13760a2800
@@ -163,3 +210,7 @@ rerun this command to reinitialize your working directory. If you forget, other
 commands will detect it and remind you to do so if necessary.
 make[1]: ディレクトリ `C:/work/raspberry-k8s-pilot' から出ます
 ```
+
+
+kubeadm join 192.168.11.101:6443 --token 4jpsfx.au0ugkt52dykzbp5 \
+        --discovery-token-ca-cert-hash sha256:cd8b67cd47e14cd6e667229e78a224424d77be9a858908f9f4193156568826bc
