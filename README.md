@@ -130,21 +130,21 @@ k8s-worker-0001   Ready    <none>   18m   v1.18.2
 ## Kubernetes packages checks...
 
 ```bash
-dpkg -l | grep kube
-hi  kubeadm                        1.18.2-00                          arm64        Kubernetes Cluster Bootstrapping Tool
-hi  kubectl                        1.18.2-00                          arm64        Kubernetes Command Line Tool
-hi  kubelet                        1.18.2-00                          arm64        Kubernetes Node Agent
-ii  kubernetes-cni                 0.8.7-00                           arm64        Kubernetes CNI
+> dpkg -l | grep kube
+hi  kubeadm                        1.30.0-1.1                        arm64        Command-line utility for administering a Kubernetes cluster
+hi  kubectl                        1.30.0-1.1                        arm64        Command-line utility for interacting with a Kubernetes cluster
+hi  kubelet                        1.30.0-1.1                        arm64        Node agent for Kubernetes clusters
+ii  kubernetes-cni                 1.4.0-1.1                         arm64        Binaries required to provision kubernetes container networking
 ```
 
 ## kubectl setup...
-
+Configure kubectl on the host PC
 ```powershell
 > cd ~
-> mkdir .kube
-> cd .kube
+> mkdir tools/.kube
+> cd tools/.kube
 > New-Item config -type file
-> ssh <user name>@<IP address> sudo kubectl config view --raw > ~/.kube/config
+> ssh <user name>@<IP address> sudo kubectl config view --raw > config
 ```
 
 # Set NAMESPACE

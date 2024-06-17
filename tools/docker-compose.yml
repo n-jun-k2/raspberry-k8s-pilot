@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   golang:
     build:
@@ -16,10 +15,12 @@ services:
       dockerfile: ./docker/kube/Dockerfile
       target: stage1
     working_dir: /skaffold
+    tty: true
+    entrypoint: bash
     volumes:
       - ../k8s:/k8s
       - ../skaffold:/skaffold
-      - ~/.kube:/root/.kube
+      - .kube:/root/.kube
 volumes:
   pkg_store:
   bin_store:

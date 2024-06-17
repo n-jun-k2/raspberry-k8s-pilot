@@ -1,7 +1,7 @@
-FROM ubuntu:20.10 AS base
+FROM ubuntu:22.04 AS base
 
-ENV KUBECTL_VERSION 1.21.3
-ENV SKAFFOLD_VERSION 1.29.0
+ENV KUBECTL_VERSION 1.30.0
+ENV SKAFFOLD_VERSION 2.11.1
 ENV K9S_VERSION 0.24.14
 
 RUN apt-get update && apt-get install --no-install-recommends -y  \
@@ -23,7 +23,7 @@ RUN curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/sk
   && chmod +x skaffold \
   && mv skaffold /usr/local/bin
 
-FROM ubuntu:20.10 AS stage1
+FROM ubuntu:22.04 AS stage1
 
 COPY --from=base /usr/local/bin /usr/bin
 CMD []
